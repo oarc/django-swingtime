@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block main %}
+{% if perms.swingtime %}
+<p><em>Click a calendar date below to add a new event</em></p>
+{% endif %}
+    <h4>
+        <a class="plain" href="{% url 'swingtime-monthly-view' last_month.year last_month.month %}" 
+           title="Last Month">&larr;</a>
+        {{ this_month|date:"F" }}
+        <a class="plain" title="View {{ this_month.year}}" href="{% url 'swingtime-yearly-view' this_month.year %}">
+            {{ this_month|date:"Y" }}</a>
+        <a class="plain" href="{% url 'swingtime-monthly-view' next_month.year next_month.month %}" 
+           title="Next Month">&rarr;</a>
+    </h4>
+
+    <table class="month-view" width="100%">
+      <col style="width:14%;">
+      <col style="width:14%;">
+      <col style="width:14%;">
+      <col style="width:14%;">
+      <col style="width:14%;">
+      <col style="width:14%;">
+      <col style="width:14%;">
+      
+      <thead>
+          <tr>
+            <th>Sun</th>
+	    <th>Mon</th>
+	    <th>Tue</th>
+	    <th>Wed</th>
+	    <th>Thu</th>
+	    <th>Fri</th>
+	    <th>Sat</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in calendar %}
+            <tr>
+                {% for day,items in row  %}
+                <td class="month-view">
+                {% if day %}
+                        <a class="day-ordinal" href="{% url 'swingtime-daily-view' this_month.year this_month.month day %}">{{ day }}</a>
+                    {% if items %}
+		      <ul class="event-items">{% for item in items %}
+                        <li class="event-items">
+                            <a href="{{ item.get_absolute_url }}">
+                                {{ item.start_time|time }}
+                                {{ item.title }}</a>
+                        </li>{% endfor %}
+                      </ul>
+                    {% endif %}
+                {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

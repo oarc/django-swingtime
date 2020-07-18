@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load mezzanine_tags keyword_tags %}
+{% load membership_extras %}
+{% block main %}
+
+<h5>Current events for this day...</h5>
+<h4>
+  <a class="plain" href="{% url 'swingtime-daily-view' prev_day.year prev_day.month prev_day.day %}">&larr;</a>
+  {{ day|date:"l, N jS Y" }}
+  <a class="plain" href="{% url 'swingtime-daily-view' next_day.year next_day.month next_day.day %}">&rarr;</a>
+</h4>
+
+
+{% if count != 0 %}
+<table class="calendar">
+  <thead>
+    <tr>
+      <th class="center">Time</th>
+    </tr>
+    <th class="center"><a href="{% url 'swingtime-add-event' %}?dtstart={{ tm.isoformat }}">{{ tm|date:"h:i a" }}</a></th>
+  </thead>
+  <tbody>
+    {% for tm,cells in timeslots %}
+    {% for cell in cells %}
+    {% if cell != "" %}
+    <tr><td{% if cell.event_class %} class="{{cell.event_class}}"{% endif %}>
+	{{ tm|date:"h:i a" }}  {{ cell }}</td></tr>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+  </tbody>
+    </table>
+
+    {% else %}
+    <H3>Nothing scheduled today</H3>
+    {% endif %}
+
+{% if perms.swingtime %}
+    <h5>Select an event from the table of events below to schedule an additional time/date...</h5>
+    <table border=1>
+      <style> th, td { padding: 5px; } </style>
+      {% for event in events %}
+      <tr>
+	<td><a href='{% url "swingtime-events" %}{{ event.pk }}?dtstart={{ day|date:"Y-m-d" }}'>{{event}}</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+</form>
+<h5>Select a time from the drop down menu to add a new event...</h5>
+  <form action="{% url 'swingtime-add-event' %}?dtstart=value"> 
+  <form action="value">
+    <table class="calendar">
+      <select name="dtstart">
+	{% for tm,cells in timeslots %}
+	<option value="{{tm.isoformat}}">{{ tm|date:"H:i" }}</option>
+        {% endfor %}
+      </select>
+      <input type="submit" value="Add New Event">
+    </table>
+  </form>
+
+  {% endif %}
+  
+{% endblock %}

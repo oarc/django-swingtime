@@ -1,0 +1,20 @@
+{% if perms.swingtime %}
+         <tr><th>{{ event_form.event_type.label_tag }}</th>
+            <td>{{ event_form.event_type.errors }}
+                {{ event_form.event_type }}</td></tr>
+        <tr><th>{{ event_form.title.label_tag }}</th>
+            <td>{{ event_form.title.errors }}
+                {{ event_form.title }}</td></tr>
+        <tr><th>{{ event_form.description.label_tag }}</th>
+            <td>{{ event_form.description }}</td></tr>
+{% else %}
+         <tr><th>{{ event_form.event_type.label_tag }}</th>
+            <td>{{ event_form.event_type.errors }}
+                {{ event_form.event_type.value }}</td></tr>
+        <tr><th>{{ event_form.title.label_tag }}</th>
+            <td>{{ event_form.title.errors }}
+                {{ event_form.title.value }}</td></tr>
+        <tr><th>{{ event_form.description.label_tag }}</th>
+            <td>{{ event_form.description.value }}</td></tr>
+
+{% endif %}
