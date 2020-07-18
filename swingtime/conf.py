@@ -15,7 +15,7 @@ DEFAULT_SETTINGS = {
 
     # A datetime.time value indicting the starting time for time slot grids and form
     # selectors
-    'TIMESLOT_START_TIME':  datetime.time(9),
+    'TIMESLOT_START_TIME':  datetime.time(0),
 
     # A datetime.timedelta value indicating the offset value from
     # TIMESLOT_START_TIME for creating time slot grids and form selectors. The for
@@ -24,11 +24,11 @@ DEFAULT_SETTINGS = {
     # 1:30am (01:30), in which case a value of datetime.timedelta(hours=10.5)
     # could be specified to indicate that the 1:30 represents the following date's
     # time and not the current date.
-    'TIMESLOT_END_TIME_DURATION':  datetime.timedelta(hours=+8),
+    'TIMESLOT_END_TIME_DURATION':  datetime.timedelta(hours=+24),
 
     # Indicates a minimum value for the number grid columns to be shown in the time
     # slot table.
-    'TIMESLOT_MIN_COLUMNS':  4,
+    'TIMESLOT_MIN_COLUMNS':  1,
 
     # Indicate the default length in time for a new occurrence, specifed by using
     # a datetime.timedelta object
