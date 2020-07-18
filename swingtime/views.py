@@ -37,6 +37,7 @@ def event_listing(
     '''
     events = events or Event.objects.all()
     extra_context['events'] = events
+
     return render(request, template, extra_context)
 
 
@@ -47,6 +48,9 @@ def event_view(
     event_form_class=forms.EventForm,
     recurrence_form_class=forms.MultipleOccurrenceForm
 ):
+
+    print("ZZZ event_view")
+    
     '''
     View an ``Event`` instance and optionally update either the event or its
     occurrences.
@@ -64,8 +68,9 @@ def event_view(
     '''
     event = get_object_or_404(Event, pk=pk)
     event_form = recurrence_form = None
+    dtstart = datetime.now()
     if request.method == 'POST':
-        if '_update' in request.POST:
+        if  '_update' in request.POST:
             event_form = event_form_class(request.POST, instance=event)
             if event_form.is_valid():
                 event_form.save(event)
@@ -77,12 +82,15 @@ def event_view(
                 return http.HttpResponseRedirect(request.path)
         else:
             return http.HttpResponseBadRequest('Bad Request')
+    else:   
+        if 'dtstart' in request.GET:
+            dtstart = parser.parse(request.GET['dtstart'])
 
     data = {
         'event': event,
         'event_form': event_form or event_form_class(instance=event),
         'recurrence_form': recurrence_form or recurrence_form_class(
-            initial={'dtstart': datetime.now()}
+            initial={'dtstart': dtstart}
         )
     }
     return render(request, template, data)
@@ -108,10 +116,41 @@ def occurrence_view(
     '''
     occurrence = get_object_or_404(Occurrence, pk=pk, event__pk=event_pk)
     if request.method == 'POST':
+        value = request.POST.__getitem__('post')
         form = form_class(request.POST, instance=occurrence)
-        if form.is_valid():
-            form.save()
+        if value == 'Update':
+            if form.is_valid():
+                form.save()
             return http.HttpResponseRedirect(request.path)
+        elif value == "Delete":
+            if form.is_valid():
+                # get event_id from this occurrence this is pk
+                # Then delete occurrence
+
+                occurrence.delete()
+
+                # local OARC.net mod (db@db.net)
+                # Then look for other occurrences with this event_id this is event_pk
+                # There should be a popup to confirm deleting the event instead
+                # after deleting all of its occurrences.
+                
+                """
+
+                try:
+                    all_occurrences = Occurrence.objects.all(event__pk=event_pk)
+                except:
+                    try:
+                        one_event = Event.objects.get(pk=event_pk)
+                        one_event.delete()
+                    except:
+                        pass
+
+                """
+                
+                return http.HttpResponseRedirect("/calendar")
+            return http.HttpResponseRedirect(request.path)
+        else:
+            return http.HttpResponseRedirect(request.path)            
     else:
         form = form_class(instance=occurrence)
 
@@ -124,6 +163,7 @@ def add_event(
     event_form_class=forms.EventForm,
     recurrence_form_class=forms.MultipleOccurrenceForm
 ):
+
     '''
     Add a new ``Event`` instance and 1 or more associated ``Occurrence``s.
 
@@ -156,7 +196,7 @@ def add_event(
             except(TypeError, ValueError) as exc:
                 # TODO: A badly formatted date is passed to add_event
                 logging.warning(exc)
-
+            
         dtstart = dtstart or datetime.now()
         event_form = event_form_class()
         recurrence_form = recurrence_form_class(initial={'dtstart': dtstart})
@@ -197,12 +237,27 @@ def _datetime_view(
     '''
     timeslot_factory = timeslot_factory or utils.create_timeslot_table
     params = params or {}
+    timeslots = timeslot_factory(dt, items, **params)
+
+    """
+    Hack: Count the number of scheduled events for the day db@db.net
+    """
+    
+    count = 0
+    for tm,cells in timeslots:
+        for cell in cells:
+            if cell != "":
+                count = count + 1
+    
+    events = Event.objects.all()
 
     return render(request, template, {
         'day':       dt,
         'next_day':  dt + timedelta(days=+1),
         'prev_day':  dt + timedelta(days=-1),
-        'timeslots': timeslot_factory(dt, items, **params)
+        'count' : count,
+        'timeslots': timeslots,
+        'events' : events
     })
 
 
@@ -275,7 +330,7 @@ def month_view(
     queryset=None
 ):
     '''
-    Render a tradional calendar grid view with temporal navigation variables.
+    Render a traditional calendar grid view with temporal navigation variables.
 
     Context parameters:
 
@@ -307,7 +362,7 @@ def month_view(
     # month but end in this month?
     queryset = queryset._clone() if queryset is not None else Occurrence.objects.select_related()
     occurrences = queryset.filter(start_time__year=year, start_time__month=month)
-
+    
     def start_day(o):
         return o.start_time.day
 
