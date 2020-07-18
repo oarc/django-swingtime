@@ -1,0 +1,96 @@
+/*========================================
+        SWINGTIME
+==========================================*/
+.plain{
+    color:black;
+}
+
+.month-view {
+    color:black;
+}
+
+.month-view table{
+/*    width: 100%; */
+}
+
+.month-view th{
+    background-color: LightBlue;
+}
+
+.month-view td {
+    vertical-align:top;
+    height: 100px;
+    border: 1px solid LightBlue;
+}
+    
+.month-view tr:nth-child(even) {
+    vertical-align:top;
+    background-color: LightGray;
+}
+
+.today today{
+    text-overflow: ellipsis;
+    vertical-align: 
+}
+
+.event-items {
+    font-weight:bold;
+    vertical-align:top;
+    color: black ;
+    background-color: #fffcc3;
+    width: 50px;
+    text-overflow: ellipsis;
+}
+
+.event-times li {
+    font-weight:bold;
+    vertical-align:top;
+    color: black ;
+    background-color: #fffcc3;
+    text-overflow: ellipsis;
+}
+
+.event-items li {
+    font-weight:bold;
+    vertical-align:top;
+    color: black ;
+    background-color: #fffcc3;
+    text-overflow: ellipsis;
+}
+
+.today {
+    color:black;
+}
+
+.day-ordinal {
+    font-weight:bold; 
+    color: black;
+    width: 50px;
+}
+
+.horizontal li{
+    float: left;
+    word-spacing: 1px;  
+}
+
+.form-indent
+{
+    text-indent: 1px;
+}
+
+.evt-net-even {
+    background-color: #fffcc3;
+}
+
+.evt-net-odd {
+    background-color: #fffcc3;
+}
+
+.evt-mtg-even {
+    background-color: lightgreen;
+}
+
+.evt-mtg-odd {.evt-net-even {
+    background-color: lightgreen;
+}
+
