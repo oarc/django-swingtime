@@ -1,0 +1,3 @@
+This a fork from http://dakrauth.github.io/django-swingtime
+since swingtime is school oriented but for the OARC it's being
+used for event calendaring some local mods were applied.
